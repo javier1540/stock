@@ -65,7 +65,7 @@ class Base:
 
     def ver_talles_de(self,producto,institucion):
         if len(institucion) != 0:
-            registros = self.cursor.execute("""SELECT STOCK.Tipo,talles.talle FROM STOCK JOIN talles ON STOCK.Talle_id = talles.id 
+            registros = self.cursor.execute("""SELECT STOCK.Tipo,talles.talle FROM STOCK JOIN talles ON STOCK.Talle_id = talles.id
                                                 WHERE institucion = '{}' AND Tipo = '{}' ORDER BY talles.id ASC""".format(institucion,producto)).fetchall()
             lista = []
             for valores in registros:
@@ -73,7 +73,7 @@ class Base:
                     lista.append(valores[1])
             return lista
         else:
-            registros = self.cursor.execute("""SELECT STOCK.Tipo,talles.talle FROM STOCK JOIN talles ON STOCK.Talle_id = talles.id 
+            registros = self.cursor.execute("""SELECT STOCK.Tipo,talles.talle FROM STOCK JOIN talles ON STOCK.Talle_id = talles.id
                                     WHERE Tipo = '{}' ORDER BY talles.id ASC""".format(producto)).fetchall()
             lista = []
             for valores in registros:
@@ -115,32 +115,29 @@ class Base:
 
 
     def ver_instituciones(self):
-        self.cursor.execute("SELECT institucion FROM STOCK ORDER BY institucion ASC")
+        self.cursor.execute("SELECT DISTINCT institucion FROM STOCK ORDER BY institucion ASC")
         registros = self.cursor.fetchall()
         lista = []
         for registro in registros:
-            if not registro[0] in lista:
-                lista.append(registro[0])
+            lista.append(registro[0])
         return lista
 
     def ver_tipos(self):
-        registros = self.cursor.execute("""SELECT Tipo FROM STOCK """).fetchall()
+        registros = self.cursor.execute("""SELECT DISTINCT Tipo FROM STOCK """).fetchall()
         lista = []
         for registro in registros:
-            if registro[0] not in lista:
-                lista.append(registro[0])
+            lista.append(registro[0])
         return lista
     def ver_tipos_de(self,institucion):
-        self.cursor.execute("SELECT Tipo FROM STOCK WHERE institucion='{}' ORDER BY Tipo ASC".format(institucion))
+        self.cursor.execute("SELECT DISTINCT Tipo FROM STOCK WHERE institucion='{}' ORDER BY Tipo ASC".format(institucion))
         registros = self.cursor.fetchall()
         lista = []
         for registro in registros :
-            if not registro[0] in lista:
-                lista.append(registro[0])
+            lista.append(registro[0])
         return lista
 
     def ver_articulos(self,institucion,tipo):
-        self.cursor.execute("""SELECT STOCK.id,STOCK.institucion,STOCK.Tipo,talles.talle,STOCK.cantidad,STOCK.Precio 
+        self.cursor.execute("""SELECT STOCK.id,STOCK.institucion,STOCK.Tipo,talles.talle,STOCK.cantidad,STOCK.Precio
                             FROM STOCK  INNER JOIN talles ON STOCK.Talle_id = talles.id WHERE institucion = '{}' AND tipo = '{}'
                             ORDER BY STOCK.talle_id ASC""".format(institucion,tipo))
         registros = self.cursor.fetchall()
@@ -160,6 +157,7 @@ class Base:
             if registro[0] not in precios:
                 precios.append(registro[0])
         return precios
+        
 #*****************************************
 # Cantidades:
 class Cantidades:
@@ -167,7 +165,7 @@ class Cantidades:
         self.conexion = sqlite3.connect("stock.db")
         self.cursor = self.conexion.cursor()
     def producto(self,institucion,tipo):
-        cuenta = self.cursor.execute("SELECT COUNT(*) FROM STOCK WHERE institucion = '{}' AND Tipo= '{}' AND cantidad > 0".format(institucion,tipo)).fetchone() 
+        cuenta = self.cursor.execute("SELECT COUNT(*) FROM STOCK WHERE institucion = '{}' AND Tipo= '{}' AND cantidad > 0".format(institucion,tipo)).fetchone()
         return cuenta[0]
 
 # probando la clase Cantidades:
