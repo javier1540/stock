@@ -160,7 +160,11 @@ class Base:
             if registro[0] not in precios:
                 precios.append(registro[0])
         return precios
-
+#*****************************************
+# Cantidades:
+class Cantidades_de:
+    def __init__(self):
+        pass
 
 b = Base()
 print(b.ver_precio_de("Chomba","XS"))
