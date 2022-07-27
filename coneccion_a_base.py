@@ -162,9 +162,15 @@ class Base:
         return precios
 #*****************************************
 # Cantidades:
-class Cantidades_de:
+class Cantidades:
     def __init__(self):
-        pass
+        self.conexion = sqlite3.connect("stock.db")
+        self.cursor = self.conexion.cursor()
+    def producto(self,institucion,tipo):
+        cuenta = self.cursor.execute("SELECT COUNT(*) FROM STOCK WHERE institucion = '{}' AND Tipo= '{}' AND cantidad > 0".format(institucion,tipo)).fetchone() 
+        return cuenta[0]
 
-b = Base()
-print(b.ver_precio_de("Chomba","XS"))
+# probando la clase Cantidades:
+if __name__ == "__main__":
+    cantidades = Cantidades()
+    print(cantidades.producto("Tecnico ","Chomba"))
