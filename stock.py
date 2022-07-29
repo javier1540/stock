@@ -175,10 +175,12 @@ class Stock(ttk.Frame):
     def seleccion_tipo(self,event=None):
         self.label2.config(text=self.datos[1])
         if len(self.lista_prod.curselection()) != 0 :
+            cantidades = Cantidades()
             self.datos[1] = "no hay seleccion"
             tipo_seleccionado = str(self.lista_prod.get(self.lista_prod.curselection()[0]))
             self.datos[1] = tipo_seleccionado
-            self.label2.config(text=self.datos[1])
+            cantidad_de = cantidades.producto(self.datos[0],self.datos[1])
+            self.label2.config(text="Total: {}".format(cantidad_de))
             self.cargar_treeview()
             #Mantener la seleccion
             for i in range(self.lista_prod.size()):

@@ -165,7 +165,7 @@ class Cantidades:
         self.conexion = sqlite3.connect("stock.db")
         self.cursor = self.conexion.cursor()
     def producto(self,institucion,tipo):
-        cuenta = self.cursor.execute("SELECT COUNT(*) FROM STOCK WHERE institucion = '{}' AND Tipo= '{}' AND cantidad > 0".format(institucion,tipo)).fetchone()
+        cuenta = self.cursor.execute("SELECT SUM(cantidad) FROM STOCK WHERE institucion = '{}' AND Tipo = '{}'".format(institucion,tipo)).fetchone()
         return cuenta[0]
 
 # probando la clase Cantidades:
