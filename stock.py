@@ -173,14 +173,12 @@ class Stock(ttk.Frame):
 
             #ver los articulos
     def seleccion_tipo(self,event=None):
-        self.label2.config(text=self.datos[1])
+        self.ver_total_p()
         if len(self.lista_prod.curselection()) != 0 :
-            cantidades = Cantidades()
             self.datos[1] = "no hay seleccion"
             tipo_seleccionado = str(self.lista_prod.get(self.lista_prod.curselection()[0]))
             self.datos[1] = tipo_seleccionado
-            cantidad_de = cantidades.producto(self.datos[0],self.datos[1])
-            self.label2.config(text="Total: {}".format(cantidad_de))
+            self.ver_total_p()
             self.cargar_treeview()
             #Mantener la seleccion
             for i in range(self.lista_prod.size()):
@@ -197,6 +195,8 @@ class Stock(ttk.Frame):
         # limpiar treeview
         for valor in self.treeview.get_children():
             self.treeview.delete(valor)
+        # actualizar los valores de self.label2
+        self.ver_total_p()
         # agregar registros a treeview
         contador = 1
         for registro in self.base.ver_articulos(self.datos[0],self.datos[1]):
@@ -218,7 +218,14 @@ class Stock(ttk.Frame):
                     self.treeview.insert("", tk.END, text=talle, values=(cantidad, precio), tags=('oddrow2',))
                     contador += 1
 
-
+    def ver_total_p(self):
+        self.label2.config(text=self.datos[1])
+        cantidades = Cantidades()
+        cantidad_de = cantidades.producto(self.datos[0],self.datos[1])
+        if cantidad_de != None:
+            self.label2.config(text="Total: {}".format(cantidad_de))
+        else:
+            self.label2.config(text="")
 
 
 
