@@ -58,14 +58,19 @@ class Stock(ttk.Frame):
         self.label2.grid(column=0,row=1)
         self.lista_prod.bind('<<ListboxSelect>>',self.seleccion_tipo)
 
-    def cargar_lista_tipo(self,institucion="no hay"):
-        if institucion != "no hay":
+    def cargar_lista_tipo(self,institucionSeleccionada="no hay"):
+        if institucionSeleccionada != "no hay":
             self.lista_prod.delete(0,tk.END)
-            for tipo in self.base.ver_tipos_de(institucion):
-                self.lista_prod.insert(tk.END,tipo)
+            self.insertarDatosDe(institucionSeleccionada)
         else:
             self.lista_prod.delete(0,tk.END)
 
+    def insertarDatosDe(self,institucion):
+        for dato in self.base.ver_tipos_de(institucion):
+            self.lista_prod.insert(tk.END,dato)
+
+    def limpiar(self,lista):
+        lista.delete(0,tk.END)
 
     def articulos(self):
         #treeview
