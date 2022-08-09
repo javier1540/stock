@@ -43,8 +43,11 @@ class Stock(ttk.Frame):
 
         self.lista_inst.bind('<<ListboxSelect>>',self.seleccion)
 
+    def limpiarLista(self,lista):
+        lista.delete(0,tk.END)
+
     def cargar_lista_inst(self):
-        self.lista_inst.delete(0,tk.END)
+        self.limpiarLista(self.lista_inst)
         for n,institucion in enumerate(self.base.ver_instituciones()):
             self.lista_inst.insert(n,institucion)
 
@@ -60,17 +63,14 @@ class Stock(ttk.Frame):
 
     def cargar_lista_tipo(self,institucionSeleccionada="no hay"):
         if institucionSeleccionada != "no hay":
-            self.lista_prod.delete(0,tk.END)
+            self.limpiarLista(self.lista_prod)
             self.insertarDatosDe(institucionSeleccionada)
         else:
-            self.lista_prod.delete(0,tk.END)
+            self.limpiarLista(self.lista_prod)
 
     def insertarDatosDe(self,institucion):
         for dato in self.base.ver_tipos_de(institucion):
             self.lista_prod.insert(tk.END,dato)
-
-    def limpiar(self,lista):
-        lista.delete(0,tk.END)
 
     def articulos(self):
         #treeview
@@ -111,7 +111,9 @@ class Stock(ttk.Frame):
         self.agregar_b.grid(column=0,row=2,pady=5)
         self.quitar_b.grid(column=0,row=3,pady=5)
 
+        # boton eliminar
         self.b_eliminar = ttk.Button(self.labelframe_art,text="Eliminar",state="disabled",command=self.eliminar_a)
+
         self.treeview.grid(column=0,row=0,pady=5,columnspan=3)
         self.scroll.configure(command=self.treeview.yview)
         self.scroll.grid(column=3,row=0,sticky="NS")
@@ -146,13 +148,15 @@ class Stock(ttk.Frame):
             precio = valores[1]
             self.datos.insert(2,talle)
             self.datos.insert(3,precio)
-            self.agregar_b["state"] = "normal"
-            self.quitar_b["state"] = "normal"
-            self.b_eliminar["state"] = "normal"
+            self.CambiarestadoBotonesAQE("normal")
             #precio 
             self.label_precio.config(text="Precio: -----")
             self.label_precio.config(text="Precio: {}".format(precio))
-
+    
+    def CambiarestadoBotonesAQE(self,estado):
+        self.agregar_b  ["state"] = estado
+        self.quitar_b   ["state"] = estado
+        self.b_eliminar ["state"] = estado
 
 
     def seleccion(self,event=None):
@@ -160,21 +164,22 @@ class Stock(ttk.Frame):
             self.datos[0] = "no hay seleccion"
             #actualizar treeview
             self.cargar_treeview()
-            posicion = self.lista_inst.curselection()[0]
-            self.institucion_seleccionada = str(self.lista_inst.get(posicion))
-            self.datos.insert(0,self.institucion_seleccionada)
-            #self.labeli.config(text=self.datos[0])
-            #self.labeli.config(text=institucion_seleccionada)
-            for i in range(self.lista_inst.size()):
-                self.lista_inst.itemconfigure(i,bg="white",fg="black")
-            self.lista_inst.itemconfigure(posicion,bg="#7EBCFF",fg="black")
+            self.datos.insert(0,self.institucionSeleccionada())
+            self.mantenerSeleccion()
             # ver los tipos de las institucion seleccionada
-            self.cargar_lista_tipo(self.institucion_seleccionada)
+            self.cargar_lista_tipo(self.institucionSeleccionada())
              # borro el precio anterior :
             self.label_precio.config(text="Precio: -----")
 
-
-
+    def institucionSeleccionada(self): # devuelve la institucion seleccionada de la lista institucion
+        institucion     = self.lista_inst.get(self.posicionInst())
+        return str(institucion)
+    def posicionInst(self): # devuelve la posicion 
+        return self.lista_inst.curselection()[0]
+    def mantenerSeleccion(self): # mantiene el backgroudn de la seleccion en azul 
+        for i in range(self.lista_inst.size()):
+            self.lista_inst.itemconfigure(i,bg="white",fg="black")
+        self.lista_inst.itemconfigure(self.posicionInst(),bg="#7EBCFF",fg="black")
 
             #ver los articulos
     def seleccion_tipo(self,event=None):
@@ -193,10 +198,7 @@ class Stock(ttk.Frame):
             self.label_precio.config(text="Precio: -----")
 
     def cargar_treeview(self):
-        ##### desabilitar botones agregar y quitar ######
-        self.agregar_b["state"] = "disabled"
-        self.quitar_b["state"] = "disabled"
-        self.b_eliminar["state"] = "disabled"
+        self.CambiarestadoBotonesAQE("disabled")
         # limpiar treeview
         for valor in self.treeview.get_children():
             self.treeview.delete(valor)
