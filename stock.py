@@ -140,6 +140,18 @@ class Stock(ttk.Frame):
         self.cargar_treeview()
         self.sb_cantidad.set(1)
 
+    def CambiarestadoBotonesAQE(self,estado):
+        self.agregar_b  ["state"] = estado
+        self.quitar_b   ["state"] = estado
+        self.b_eliminar ["state"] = estado
+
+        # Configura el precio 
+    def labelPrecio(self,precio=None):
+        if precio != None:
+            self.label_precio.config(text="Precio: {}".format(precio))
+        else:
+            self.label_precio.config(text="Precio: -----")
+
     def treeview_select(self,event=None):
         if self.treeview.selection() != 0 :
             posicion = self.treeview.selection()[0] #devuelve I001
@@ -150,52 +162,47 @@ class Stock(ttk.Frame):
             self.datos.insert(3,precio)
             self.CambiarestadoBotonesAQE("normal")
             #precio 
-            self.label_precio.config(text="Precio: -----")
-            self.label_precio.config(text="Precio: {}".format(precio))
-    
-    def CambiarestadoBotonesAQE(self,estado):
-        self.agregar_b  ["state"] = estado
-        self.quitar_b   ["state"] = estado
-        self.b_eliminar ["state"] = estado
+            self.labelPrecio(precio)
 
-
-    def seleccion(self,event=None):
-        if len(self.lista_inst.curselection()) != 0:
-            self.datos[0] = "no hay seleccion"
-            #actualizar treeview
-            self.cargar_treeview()
-            self.datos.insert(0,self.institucionSeleccionada())
-            self.mantenerSeleccion()
+# configuracion de la lista instituciones al seleccionar un item 
+    def seleccion(self,event=None): 
+        if len(self.lista_inst.curselection()) != 0: # en caso de no seleccionar algun item de la lista 
+            self.configItemSeleccionado(self.lista_inst,0)
             # ver los tipos de las institucion seleccionada
-            self.cargar_lista_tipo(self.institucionSeleccionada())
-             # borro el precio anterior :
-            self.label_precio.config(text="Precio: -----")
+            self.cargar_lista_tipo(self.seleccionDe(self.lista_inst))
 
-    def institucionSeleccionada(self): # devuelve la institucion seleccionada de la lista institucion
-        institucion     = self.lista_inst.get(self.posicionInst())
-        return str(institucion)
-    def posicionInst(self): # devuelve la posicion 
-        return self.lista_inst.curselection()[0]
-    def mantenerSeleccion(self): # mantiene el backgroudn de la seleccion en azul 
-        for i in range(self.lista_inst.size()):
-            self.lista_inst.itemconfigure(i,bg="white",fg="black")
-        self.lista_inst.itemconfigure(self.posicionInst(),bg="#7EBCFF",fg="black")
+    def configItemSeleccionado(self,lista,tipoDato):
+        self.datos[tipoDato] = "no hay seleccion"
+        self.datos[tipoDato] = self.seleccionDe(lista)
+        self.mantenerSeleccionDe(lista)
+        self.cargar_treeview()
+        # actualizo el precio :
+        self.labelPrecio()
+            
+
+    def seleccionDe(self,lista): # devuelve la institucion seleccionada de la lista institucion
+        seleccion = lista.get(self.posicionDe(lista))
+        return str(seleccion)
+    def posicionDe(self,lista): # devuelve la posicion 
+        return lista.curselection()
+
+
+# la seleccion de una lista se pierde cuando selecciono un item de otra lista
+#por lo tanto para mantener la seleccion se usa esta funcion 
+    def mantenerSeleccionDe(self,lista): # mantiene el backgroudn de la seleccion en azul 
+        for i in range(lista.size()):
+            lista.itemconfigure(i,bg="white",fg="black")
+        lista.itemconfigure(self.posicionDe(lista),bg="#7EBCFF",fg="black")
 
             #ver los articulos
     def seleccion_tipo(self,event=None):
         self.ver_total_p()
         if len(self.lista_prod.curselection()) != 0 :
-            self.datos[1] = "no hay seleccion"
-            tipo_seleccionado = str(self.lista_prod.get(self.lista_prod.curselection()[0]))
-            self.datos[1] = tipo_seleccionado
+            self.configItemSeleccionado(self.lista_prod,1)
             self.ver_total_p()
-            self.cargar_treeview()
             #Mantener la seleccion
-            for i in range(self.lista_prod.size()):
-                self.lista_prod.itemconfigure(i,bg="white",fg="black") # poner los items de lista en fondo blanco y letras negras
-            self.lista_prod.itemconfigure(self.lista_prod.curselection()[0],bg="#7EBCFF",fg="black")# y dejar el item seleccionado en fondo verde y letras blancas
-            # borro el precio anterior :
-            self.label_precio.config(text="Precio: -----")
+            self.mantenerSeleccionDe(self.lista_prod)
+            
 
     def cargar_treeview(self):
         self.CambiarestadoBotonesAQE("disabled")
@@ -235,26 +242,3 @@ class Stock(ttk.Frame):
             self.label2.config(text="")
 
 
-
-"""
-
-            LISTAS
-    * configurar el boton nuevo de la lista institucion :
-        * al precionar el boton nuevo se agrega lo que se escribio en el entry a la base en un registro donde todos los campos ecepto institucion estan en none
-            * el boton nuevo puede tener una toplevel y sacar el entry de la ventana principal
-    * configurar la lista tipo
-        * que reciba en un conjunto los tipos de la base
-        * personalizar
-
-    cuestiones:
-    * que pasaria si yo quisiera modificar el nombre de una institucion ?
-        1 con el mismo entry y un boton modificar actualizaria con update todos los campos de insticion seleccionado por la lista
-        2 haciendo doble clic en la posicion de la lista y superponer un entry y que precionando enter se modifique el valor
-
-
-            TREEVIEW
-    * la treeview articulos tiene que mostrar los elementos de la base filtrados por la lista inst y tipo
-
-
-
-"""
