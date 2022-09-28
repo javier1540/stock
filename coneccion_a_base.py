@@ -145,7 +145,7 @@ class Base:
 
     def actualizar_precio(self,producto,talle,precio,institucion):
         if len(institucion) != 0:
-            self.cursor.execute("""UPDATE STOCK SET Precio = {} WHERE institucion = '{}' Tipo = '{}' AND Talle_id = (SELECT id FROM talles WHERE talle = '{}')""".format(institucion,precio, producto, talle))
+            self.cursor.execute("""UPDATE STOCK SET Precio = {} WHERE institucion = '{}' AND Tipo = '{}' AND Talle_id = (SELECT id FROM talles WHERE talle = '{}')""".format(precio,institucion, producto, talle))
             self.conexion.commit()
         else:
             self.cursor.execute("""UPDATE STOCK SET Precio = {} WHERE Tipo = '{}' AND Talle_id = (SELECT id FROM talles WHERE talle = '{}')""".format(precio,producto,talle))
